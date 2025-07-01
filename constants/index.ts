@@ -2,6 +2,7 @@ import arrowDown from "@/assets/icons/arrow-down.png";
 import arrowUp from "@/assets/icons/arrow-up.png";
 import backArrow from "@/assets/icons/back-arrow.png";
 import car from "@/assets/icons/car.png";
+import caretRight from "@/assets/icons/caret-right.png";
 import chat from "@/assets/icons/chat.png";
 import checkmark from "@/assets/icons/check.png";
 import target from "@/assets/icons/crosshair.png";
@@ -48,6 +49,7 @@ export const images = {
 
 export const icons = {
   arrowDown,
+  caretRight,
   signOut,
   arrowUp,
   plus,

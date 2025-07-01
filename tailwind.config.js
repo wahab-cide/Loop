@@ -8,10 +8,13 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ["Inter-Regular", "sans-serif"],
-        interMedium: ["Inter-Medium", "sans-serif"],
-        interSemiBold: ["Inter-SemiBold", "sans-serif"],
-        interBold: ["Inter-Bold", "sans-serif"]
+        Inter: ["Inter", "sans-serif"],
+        InterBold: ["InterBold", "sans-serif"],
+        InterMedium: ["InterMedium", "sans-serif"],
+        InterSemiBold: ["InterSemiBold", "sans-serif"],
+        InterExtraBold: ["InterExtraBold", "sans-serif"],
+        InterExtraLight: ["InterExtraLight", "sans-serif"],
+        InterLight: ["InterLight", "sans-serif"],
       },
       colors: {
         bg: {

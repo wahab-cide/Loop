@@ -19,8 +19,25 @@ const FeedScreen = () => {
   const [activeChip, setActiveChip] = useState('All');
   const router = useRouter();
 
+  const renderRideCard = ({ item }: { item: any }) => {
+    return (
+      <RideCard
+        id={item.id}
+        avatar={item.avatar}
+        origin_address={item.origin_address}
+        destination_address={item.destination_address}
+        dateTime={item.dateTime}
+        price={item.price}
+        seatsLeft={item.seatsLeft}
+        driverName={item.driverName}
+        rating={item.rating}
+        carModel={item.carModel}
+      />
+    );
+  };
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1" style={{ backgroundColor: '#fff' }}>
       {/* TopBar */}
       <View className="flex-row items-center justify-between px-4 h-[56px]">
         {/* Left: SignOut and Logo */}
@@ -35,19 +52,19 @@ const FeedScreen = () => {
         <View className="flex-row items-center space-x-2">
           {/* Search Button */}
           <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-[#F2F2F2] items-center justify-center mr-2"
-            onPress={() => router.push({ pathname: '/search' })}
+            className="w-20 h-10 rounded-full bg-[#EFEFEF] items-center justify-center mr-2"
+            onPress={() => router.push('/search' as any)}
             activeOpacity={0.8}
           >
-            <Image source={icons.search} className="w-6 h-6" style={{ tintColor: '#000' }} />
+            <Image source={icons.search} className="w-7 h-7" style={{ tintColor: '#000' }} />
           </TouchableOpacity>
           {/* Post Button */}
           <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-black items-center justify-center"
-            onPress={() => router.push({ pathname: '/post' })}
+            className="w-20 h-10 rounded-full bg-black items-center justify-center"
+            onPress={() => router.push('/post' as any)}
             activeOpacity={0.8}
           >
-            <Image source={icons.plus} className="w-6 h-6" style={{ tintColor: '#fff' }} />
+            <Image source={icons.plus} className="w-7 h-7" style={{ tintColor: '#fff' }} />
           </TouchableOpacity>
         </View>
       </View>
@@ -62,11 +79,13 @@ const FeedScreen = () => {
         {chips.map((chip) => (
           <TouchableOpacity
             key={chip.label}
-            className={`h-8 px-4 rounded-full border ${activeChip === chip.label ? 'bg-[#0A84FF] border-[#0A84FF]' : 'bg-[#EFEFEF] border-[#DDD]'} justify-center items-center`}
+            className={`h-8 px-4 rounded-full border ${activeChip === chip.label ? 'bg-black border-black' : 'bg-[#EFEFEF] border-[#DDD]'} justify-center items-center`}
             onPress={() => setActiveChip(chip.label)}
             activeOpacity={0.8}
           >
-            <Text className={`text-[12px] ${activeChip === chip.label ? 'text-white' : 'text-[#666]'}`}>{chip.label}</Text>
+            <Text className={`text-[12px] ${activeChip === chip.label ? 'text-white' : 'text-black'}`}>
+              {chip.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -75,12 +94,15 @@ const FeedScreen = () => {
       <FlatList
         data={rides}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <RideCard {...item} />}
-        contentContainerStyle={{ padding: 16, paddingBottom: 80 }}
+        renderItem={renderRideCard}
+        contentContainerStyle={{ 
+          paddingTop: 16,
+          paddingBottom: 80 
+        }}
         showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );
 };
 
-export default FeedScreen; 
+export default FeedScreen;

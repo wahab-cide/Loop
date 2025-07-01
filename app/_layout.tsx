@@ -3,10 +3,10 @@ import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LogBox } from "react-native";
 import 'react-native-reanimated';
-//import AnimatedSplash from '../components/AnimatedSplash';
+import AnimatedSplash from '../components/AnimatedSplash';
 import '../global.css';
 
 SplashScreen.preventAutoHideAsync();
@@ -21,7 +21,6 @@ if (!publishableKey) {
 
 LogBox.ignoreLogs(["Clerk:"]);
 
-
 export default function RootLayout() {
   const [loaded] = useFonts({
     "InterBold": require("../assets/fonts/Inter-Bold.ttf"),
@@ -32,6 +31,8 @@ export default function RootLayout() {
     "Inter": require("../assets/fonts/Inter-Regular.ttf"),
     "InterSemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
   });
+
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     if (loaded) {
@@ -44,15 +45,20 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-      <ClerkLoaded>
-        <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(root)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <>
+      {showSplash && <AnimatedSplash onFinish={() => setShowSplash(false)} />}
+      {!showSplash && (
+        <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+          <ClerkLoaded>
+            <Stack>
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen name="(root)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </ClerkLoaded>
+        </ClerkProvider>
+      )}
+    </>
   );
 }
