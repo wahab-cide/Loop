@@ -1,29 +1,58 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { tokenCache } from "@/lib/auth";
+import { ClerkLoaded, ClerkProvider } from "@clerk/clerk-expo";
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { LogBox } from "react-native";
 import 'react-native-reanimated';
+//import AnimatedSplash from '../components/AnimatedSplash';
+import '../global.css';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+SplashScreen.preventAutoHideAsync();
+
+const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
+
+if (!publishableKey) {
+  throw new Error(
+    "Missing Publishable Key. Please set EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY in your .env",
+  );
+}
+
+LogBox.ignoreLogs(["Clerk:"]);
+
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
   const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    "InterBold": require("../assets/fonts/Inter-Bold.ttf"),
+    "InterExtraBold": require("../assets/fonts/Inter-ExtraBold.ttf"),
+    "InterExtraLight": require("../assets/fonts/Inter-ExtraLight.ttf"),
+    "InterLight": require("../assets/fonts/Inter-Light.ttf"),
+    "InterMedium": require("../assets/fonts/Inter-Medium.ttf"),
+    "Inter": require("../assets/fonts/Inter-Regular.ttf"),
+    "InterSemiBold": require("../assets/fonts/Inter-SemiBold.ttf"),
   });
 
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkLoaded>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(root)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </ClerkLoaded>
+    </ClerkProvider>
   );
 }
