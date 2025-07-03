@@ -137,7 +137,7 @@ const SignUp = () => {
               className="text-lg text-center text-general-200 mt-6"
             >
               Already have an account?{" "}
-              <Text className="text-primary-500">Log In</Text>
+              <Text className="text-primary-500">Sign In</Text>
             </Link>
           </View>
           <ReactNativeModal

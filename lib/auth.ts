@@ -64,10 +64,20 @@ export const googleOAuth = async (startOAuthFlow: any) => {
     };
   } catch (err: any) {
     console.error(err);
+    
+    // Handle the case where user is already signed in
+    if (err.code === 'session_exists' || err.errors?.[0]?.code === 'session_exists') {
+      return {
+        success: true,
+        code: "session_exists",
+        message: "Session already exists",
+      };
+    }
+    
     return {
       success: false,
       code: err.code,
-      message: err?.errors[0]?.longMessage,
+      message: err?.errors[0]?.longMessage || "An error occurred during sign in",
     };
   }
 };

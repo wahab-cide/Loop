@@ -1,3 +1,4 @@
+import { PlusButton } from '@/components/PlusButton';
 import { SignOutButton } from '@/components/SignOutButton';
 import { icons } from '@/constants';
 import { useRouter } from 'expo-router';
@@ -42,9 +43,9 @@ const FeedScreen = () => {
       <View className="flex-row items-center justify-between px-4 h-[56px]">
         {/* Left: SignOut and Logo */}
         <View className="flex-row items-center">
-          <SignOutButton>
+          {<SignOutButton>
             <Image source={icons.signOut} className="w-7 h-7 mr-3" />
-          </SignOutButton>
+          </SignOutButton>}
           <View className="w-8 h-8 rounded-full bg-black items-center justify-center">
             <View className="w-2 h-2 rounded-full bg-white" />
           </View>
@@ -52,20 +53,14 @@ const FeedScreen = () => {
         <View className="flex-row items-center space-x-2">
           {/* Search Button */}
           <TouchableOpacity
-            className="w-20 h-10 rounded-full bg-[#EFEFEF] items-center justify-center mr-2"
+            className="w-16 h-10 rounded-full bg-[#EFEFEF] items-center justify-center mr-2"
             onPress={() => router.push('/search' as any)}
             activeOpacity={0.8}
           >
             <Image source={icons.search} className="w-7 h-7" style={{ tintColor: '#000' }} />
           </TouchableOpacity>
           {/* Post Button */}
-          <TouchableOpacity
-            className="w-20 h-10 rounded-full bg-black items-center justify-center"
-            onPress={() => router.push('/post' as any)}
-            activeOpacity={0.8}
-          >
-            <Image source={icons.plus} className="w-7 h-7" style={{ tintColor: '#fff' }} />
-          </TouchableOpacity>
+          <PlusButton />
         </View>
       </View>
 

@@ -17,27 +17,11 @@ const OAuth = ({ title = "Log In with Google" }: OAuthProps) => {
     const result = await googleOAuth(startOAuthFlow);
 
     if (result.success) {
-      Alert.alert(
-        "Success", 
-        result.message, 
-        [
-          {
-            text: "OK",
-            onPress: () => router.replace("/(root)/(tabs)/home")
-          }
-        ]
-      );
+      // Direct redirect without alert
+      router.replace("/(root)/(tabs)/home");
     } else if (result.code === "session_exists") {
-      Alert.alert(
-        "Success", 
-        "Session exists. Redirecting to home screen.", 
-        [
-          {
-            text: "OK",
-            onPress: () => router.replace("/(root)/(tabs)/home")
-          }
-        ]
-      );
+      // Session already exists, redirect directly
+      router.replace("/(root)/(tabs)/home");
     } else {
       Alert.alert("Error", result.message);
     }

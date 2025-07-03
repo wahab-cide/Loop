@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
 import { LogBox } from "react-native";
+import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import AnimatedSplash from '../components/AnimatedSplash';
 import '../global.css';
@@ -50,7 +51,7 @@ export default function RootLayout() {
       {!showSplash && (
         <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
           <ClerkLoaded>
-            <Stack>
+            <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="index" options={{ headerShown: false }} />
               <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(root)" options={{ headerShown: false }} />
