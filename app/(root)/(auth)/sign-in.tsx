@@ -16,10 +16,13 @@ const SignIn = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   const onSignInPress = useCallback(async () => {
     if (!isLoaded) return;
 
+    setLoading(true);
     try {
       const signInAttempt = await signIn.create({
         identifier: form.email,
@@ -37,6 +40,8 @@ const SignIn = () => {
     } catch (err: any) {
       console.log(JSON.stringify(err, null, 2));
       Alert.alert("Error", err.errors[0].longMessage);
+    } finally {
+      setLoading(false);
     }
   }, [isLoaded, form]);
 
@@ -79,6 +84,8 @@ const SignIn = () => {
               title="Sign In"
               onPress={onSignInPress}
               className="mt-4 w-72 h-14"
+              loading={loading}
+              disabled={loading}
             />
             <OAuth title="Log In with Google" />
             <Link
@@ -88,6 +95,19 @@ const SignIn = () => {
               Don't have an account?{" "}
               <Text className="text-primary-500">Sign Up</Text>
             </Link>
+            <CustomButton
+              title="Forgot Password?"
+              onPress={async () => {
+                setForgotLoading(true);
+                router.push(`/(root)/(auth)/forgot-password`);
+                setForgotLoading(false);
+              }}
+              loading={forgotLoading}
+              disabled={forgotLoading}
+              bgVariant="primary"
+              textVariant="default"
+              className="mt-6 w-72 h-14 bg-black"
+            />
           </View>
         </View>
       </TouchableWithoutFeedback>

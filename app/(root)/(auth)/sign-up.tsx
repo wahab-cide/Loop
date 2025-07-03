@@ -25,9 +25,12 @@ const SignUp = () => {
     error: "",
     code: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [verifying, setVerifying] = useState(false);
 
   const onSignUpPress = async () => {
     if (!isLoaded) return;
+    setLoading(true);
     try {
       await signUp.create({
         emailAddress: form.email,
@@ -43,10 +46,13 @@ const SignUp = () => {
       // for more info on error handling
       console.log(JSON.stringify(err, null, 2));
       Alert.alert("Error", err.errors[0].longMessage);
+    } finally {
+      setLoading(false);
     }
   };
   const onPressVerify = async () => {
     if (!isLoaded) return;
+    setVerifying(true);
     try {
       const completeSignUp = await signUp.attemptEmailAddressVerification({
         code: verification.code,
@@ -79,6 +85,8 @@ const SignUp = () => {
         error: err.errors[0].longMessage,
         state: "failed",
       });
+    } finally {
+      setVerifying(false);
     }
   };
   return (
@@ -130,6 +138,8 @@ const SignUp = () => {
               title="Sign Up"
               onPress={onSignUpPress}
               className="mt-4 w-72 h-14"
+              loading={loading}
+              disabled={loading}
             />
             <OAuth title="Sign Up with Google" />
             <Link
@@ -173,6 +183,8 @@ const SignUp = () => {
                 title="Verify Email"
                 onPress={onPressVerify}
                 className="mt-4 w-72 h-14 bg-success-500"
+                loading={verifying}
+                disabled={verifying}
               />
             </View>
           </ReactNativeModal>
