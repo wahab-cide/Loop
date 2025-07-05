@@ -4,7 +4,8 @@ import backArrow from "@/assets/icons/back-arrow.png";
 import car from "@/assets/icons/car.png";
 import caretRight from "@/assets/icons/caret-right.png";
 import chat from "@/assets/icons/chat.png";
-import checkmark from "@/assets/icons/check.png";
+import check from "@/assets/icons/check.png";
+import clock from "@/assets/icons/clock.png";
 import target from "@/assets/icons/crosshair.png";
 import dollar from "@/assets/icons/dollar.png";
 import email from "@/assets/icons/envelope-simple.png";
@@ -27,7 +28,6 @@ import star from "@/assets/icons/star.png";
 import to from "@/assets/icons/to.png";
 import profile from "@/assets/icons/user-circle.png";
 import close from "@/assets/icons/x.svg";
-import check from "@/assets/images/check.png";
 import getStarted from "@/assets/images/get-started.png";
 import message from "@/assets/images/message.png";
 import noResult from "@/assets/images/no-result.png";
@@ -42,7 +42,6 @@ export const images = {
   onboarding3,
   getStarted,
   signUpCar,
-  check,
   noResult,
   message,
 };
@@ -55,7 +54,7 @@ export const icons = {
   plus,
   backArrow,
   chat,
-  checkmark,
+  check,
   close,
   dollar,
   car,
@@ -77,6 +76,7 @@ export const icons = {
   star,
   target,
   to,
+  clock
 };
 
 export const onboarding = [

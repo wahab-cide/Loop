@@ -143,9 +143,9 @@ export default function VerifyDriverScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <View className="flex-1 w-full items-center justify-center">
-          <ScrollView className="w-full" contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-            <View className="w-11/12 max-w-sm mx-auto flex items-center justify-center rounded-3xl bg-white shadow-lg p-3 my-16 border border-gray-100 min-h-[500px]">
+        <View className="flex-1 w-full">
+          <ScrollView className="w-full" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingVertical: 40 }} keyboardShouldPersistTaps="handled">
+            <View className="w-full flex items-center justify-center">
               <View className="mb-12 w-full items-center">
                 <Text className="text-4xl font-InterBold text-black mb-3 mt-4 text-center">
                   Become a Driver
@@ -155,7 +155,7 @@ export default function VerifyDriverScreen() {
                 </Text>
               </View>
               <View className="space-y-5 w-full items-center">
-                <View className="w-64 mb-1">
+                <View className="w-full mb-1">
                   <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                     Vehicle Make *
                   </Text>
@@ -163,11 +163,11 @@ export default function VerifyDriverScreen() {
                     placeholder="e.g., Toyota, Honda, Ford"
                     value={formData.vehicleMake}
                     onChangeText={(text) => updateFormField('vehicleMake', text)}
-                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white"
+                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                     autoCapitalize="words"
                   />
                 </View>
-                <View className="w-64 mb-1">
+                <View className="w-full mb-1">
                   <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                     Vehicle Model *
                   </Text>
@@ -175,11 +175,11 @@ export default function VerifyDriverScreen() {
                     placeholder="e.g., Camry, Civic, Focus"
                     value={formData.vehicleModel}
                     onChangeText={(text) => updateFormField('vehicleModel', text)}
-                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white"
+                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                     autoCapitalize="words"
                   />
                 </View>
-                <View className="w-64 mb-1">
+                <View className="w-full mb-1">
                   <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                     Vehicle Year *
                   </Text>
@@ -187,12 +187,12 @@ export default function VerifyDriverScreen() {
                     placeholder="e.g., 2020"
                     value={formData.vehicleYear}
                     onChangeText={(text) => updateFormField('vehicleYear', text)}
-                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white"
+                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                     keyboardType="numeric"
                     maxLength={4}
                   />
                 </View>
-                <View className="w-64 mb-1">
+                <View className="w-full mb-1">
                   <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                     Vehicle Color *
                   </Text>
@@ -200,11 +200,11 @@ export default function VerifyDriverScreen() {
                     placeholder="e.g., Black, White, Silver"
                     value={formData.vehicleColor}
                     onChangeText={(text) => updateFormField('vehicleColor', text)}
-                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white"
+                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                     autoCapitalize="words"
                   />
                 </View>
-                <View className="w-64 mb-1">
+                <View className="w-full mb-1">
                   <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                     License Plate *
                   </Text>
@@ -212,7 +212,7 @@ export default function VerifyDriverScreen() {
                     placeholder="e.g., ABC123"
                     value={formData.vehiclePlate}
                     onChangeText={(text) => updateFormField('vehiclePlate', text)}
-                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white"
+                    className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                     autoCapitalize="characters"
                     maxLength={20}
                   />
@@ -221,7 +221,7 @@ export default function VerifyDriverScreen() {
               <TouchableOpacity
                 onPress={handleSubmit}
                 disabled={isLoading}
-                className="mt-8 rounded-2xl p-3 w-64 bg-black items-center justify-center shadow-lg"
+                className="mt-8 rounded-2xl p-3 w-full bg-black items-center justify-center"
                 style={{ opacity: isLoading ? 0.7 : 1 }}
               >
                 <Text className="text-white text-center font-bold text-base">

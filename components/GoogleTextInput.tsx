@@ -31,6 +31,7 @@ const GoogleTextInput = ({
   initialLocation,
   containerStyle,
   textInputBackgroundColor,
+  placeholder,
   handlePress,
 }: GoogleInputProps) => {
   const [searchText, setSearchText] = useState(initialLocation || "");
@@ -120,14 +121,31 @@ const GoogleTextInput = ({
     getPlaceDetails(prediction.place_id);
   };
 
-  const handleManualSubmit = () => {
+  const handleManualSubmit = async () => {
     if (searchText.trim() && handlePress) {
-      // For manual entry, use a default location (you could also geocode this)
-      handlePress({
-        latitude: 37.7749,
-        longitude: -122.4194,
-        address: searchText.trim(),
-      });
+      try {
+        // Use Google Geocoding API for manual text entry
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(searchText.trim())}&key=${googlePlacesApiKey}`
+        );
+        
+        const data = await response.json();
+        
+        if (data.status === 'OK' && data.results && data.results.length > 0) {
+          const result = data.results[0];
+          handlePress({
+            latitude: result.geometry.location.lat,
+            longitude: result.geometry.location.lng,
+            address: result.formatted_address,
+          });
+        } else {
+          console.warn('Geocoding failed:', data.status, data.error_message);
+          // Show error to user instead of using fallback coordinates
+          console.error('Unable to find location for:', searchText.trim());
+        }
+      } catch (error) {
+        console.error('Error geocoding address:', error);
+      }
     }
   };
 
@@ -168,9 +186,9 @@ const GoogleTextInput = ({
     textInput: {
       backgroundColor: textInputBackgroundColor ? textInputBackgroundColor : "white",
       fontSize: 16,
-      fontWeight: "600",
+      fontWeight: "600" as const,
       marginTop: 5,
-      width: "100%",
+      width: "100%" as const,
       borderRadius: 200,
       paddingVertical: 16,
       paddingLeft: 50, // Space for icon
@@ -211,7 +229,7 @@ const GoogleTextInput = ({
           
           {/* Text Input */}
           <TextInput
-            placeholder={initialLocation ?? "Where do you want to go?"}
+            placeholder={initialLocation ?? placeholder ?? "Where do you want to go?"}
             placeholderTextColor="gray"
             value={searchText}
             onChangeText={handleTextChange}

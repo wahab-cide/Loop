@@ -41,6 +41,7 @@ export default function PostRideScreen() {
   const router = useRouter();
   const { user } = useUser();
 
+
   const [formData, setFormData] = useState<RideFormData>({
     originLabel: '',
     destinationLabel: '',
@@ -53,6 +54,7 @@ export default function PostRideScreen() {
     seatsTotal: '',
     price: '',
   });
+
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -74,8 +76,6 @@ export default function PostRideScreen() {
     if (!destinationLabel.trim()) return 'Destination location is required';
     if (originLat === null || originLng === null) return 'Please select a valid origin location';
     if (destinationLat === null || destinationLng === null) return 'Please select a valid destination location';
-    if (!departureDate.trim()) return 'Departure date is required';
-    if (!departureTime.trim()) return 'Departure time is required';
     if (!seatsTotal.trim()) return 'Number of seats is required';
     if (!price.trim()) return 'Price is required';
 
@@ -91,6 +91,18 @@ export default function PostRideScreen() {
       return 'Price must be a positive number';
     }
 
+    // Basic date format validation
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    const timeRegex = /^\d{2}:\d{2}$/;
+    
+    if (!dateRegex.test(departureDate)) {
+      return 'Please enter date in YYYY-MM-DD format';
+    }
+    
+    if (!timeRegex.test(departureTime)) {
+      return 'Please enter time in HH:MM format';
+    }
+    
     // Validate departure time is in the future
     const departureDateTime = new Date(`${departureDate}T${departureTime}`);
     if (departureDateTime <= new Date()) {
@@ -194,10 +206,6 @@ export default function PostRideScreen() {
     }));
   };
 
-  // Get today's date in YYYY-MM-DD format for min date
-  const getTodayDate = () => {
-    return new Date().toISOString().split('T')[0];
-  };
 
   return (
     <KeyboardAvoidingView
@@ -205,8 +213,8 @@ export default function PostRideScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ScrollView className="flex-1 bg-white" contentContainerStyle={{ alignItems: 'center', justifyContent: 'center', flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <View className="w-11/12 max-w-sm items-center justify-center rounded-3xl bg-white shadow-lg p-3 mt-16 mb-8 border border-gray-100 min-h-[400px]">
+        <ScrollView className="flex-1 bg-white" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, paddingVertical: 40 }} keyboardShouldPersistTaps="handled">
+          <View className="w-full items-center justify-center">
             <View className="mb-12 w-full items-center">
               <Text className="text-4xl font-InterBold text-black mb-3 mt-4 text-center">
                 Post a Ride
@@ -216,27 +224,29 @@ export default function PostRideScreen() {
               </Text>
             </View>
             <View className="space-y-5 w-full items-center">
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Origin *
                 </Text>
                 <GoogleTextInput
                   icon={icons.search}
-                  containerStyle="bg-white border border-gray-300 rounded-2xl"
+                  placeholder="From"
+                  containerStyle="bg-white border border-gray-300 rounded-2xl w-full"
                   handlePress={handleOriginSelect}
                 />
               </View>
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Destination *
                 </Text>
                 <GoogleTextInput
                   icon={icons.search}
-                  containerStyle="bg-white border border-gray-300 rounded-2xl"
+                  placeholder="To"
+                  containerStyle="bg-white border border-gray-300 rounded-2xl w-full"
                   handlePress={handleDestinationSelect}
                 />
               </View>
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Departure Date *
                 </Text>
@@ -244,11 +254,11 @@ export default function PostRideScreen() {
                   placeholder="YYYY-MM-DD"
                   value={formData.departureDate}
                   onChangeText={(text) => updateFormField('departureDate', text)}
-                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white shadow-sm"
+                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                   keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'default'}
                 />
               </View>
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Departure Time *
                 </Text>
@@ -256,11 +266,11 @@ export default function PostRideScreen() {
                   placeholder="HH:MM"
                   value={formData.departureTime}
                   onChangeText={(text) => updateFormField('departureTime', text)}
-                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white shadow-sm"
+                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                   keyboardType={Platform.OS === 'ios' ? 'numbers-and-punctuation' : 'default'}
                 />
               </View>
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Seats Available *
                 </Text>
@@ -268,11 +278,11 @@ export default function PostRideScreen() {
                   placeholder="e.g., 3"
                   value={formData.seatsTotal}
                   onChangeText={(text) => updateFormField('seatsTotal', text)}
-                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white shadow-sm"
+                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                   keyboardType="numeric"
                 />
               </View>
-              <View className="w-64 mb-1">
+              <View className="w-full mb-1">
                 <Text className="text-base font-medium text-gray-700 mb-3 ml-1">
                   Price *
                 </Text>
@@ -280,7 +290,7 @@ export default function PostRideScreen() {
                   placeholder="e.g., 10.00"
                   value={formData.price}
                   onChangeText={(text) => updateFormField('price', text)}
-                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white shadow-sm"
+                  className="border border-gray-300 rounded-2xl p-3 text-base bg-white w-full"
                   keyboardType="numeric"
                 />
               </View>
@@ -288,7 +298,7 @@ export default function PostRideScreen() {
             <TouchableOpacity
               onPress={handleSubmit}
               disabled={isLoading}
-              className="mt-8 rounded-2xl p-3 w-64 bg-black items-center justify-center shadow-lg"
+              className="mt-8 rounded-2xl p-3 w-full bg-black items-center justify-center"
               style={{ opacity: isLoading ? 0.7 : 1 }}
             >
               <Text className="text-white text-center font-bold text-base">
@@ -305,6 +315,7 @@ export default function PostRideScreen() {
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
+      
     </KeyboardAvoidingView>
   );
 }

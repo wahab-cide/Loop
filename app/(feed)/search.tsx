@@ -9,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -32,7 +32,7 @@ const Home = () => {
 
   const handleSignOut = () => {
     signOut();
-    router.replace("/(auth)/sign-in");
+    router.replace("/(root)/(auth)/sign-in");
   };
 
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -73,17 +73,25 @@ const Home = () => {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <SafeAreaView className="bg-general-500 flex-1">
-        <View className="px-5">
-          <View className="flex flex-row items-center justify-between my-5">
+        {/* Back Button */}
+        <View className="flex flex-row absolute z-10 top-16 items-center justify-start px-5">
+          <TouchableOpacity onPress={() => router.back()}>
+            <View className="w-10 h-10 bg-white rounded-full items-center justify-center">
+              <Image
+                source={icons.backArrow}
+                resizeMode="contain"
+                className="w-6 h-6"
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        
+        <View className="px-5 mt-20">
+          <View className="flex flex-row items-center justify-between my-8">
             <Text className="text-2xl font-JakartaExtraBold">
-              Welcome {user?.firstName}👋
+              Enter an address to search rides
             </Text>
-            <TouchableOpacity
-              onPress={handleSignOut}
-              className="justify-center items-center w-10 h-10 rounded-full bg-white"
-            >
-              <Image source={icons.out} className="w-4 h-4" />
-            </TouchableOpacity>
+            
           </View>
 
           <GoogleTextInput

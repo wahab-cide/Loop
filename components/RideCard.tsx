@@ -1,206 +1,269 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
+// File: components/RideCard.tsx
+import { icons } from "@/constants";
+import { RideData } from "@/store";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
-const caretRight = require('../assets/icons/caret-right.png');
-
-export interface RideCardProps {
-  id: string | number;
-  avatar: any;
-  origin_address: string;
-  destination_address: string;
-  dateTime: string;
-  price: string;
-  seatsLeft: number;
-  driverName?: string;
-  rating?: number;
-  carModel?: string;
-  onPress?: () => void;
+interface RideCardProps {
+  ride: RideData;
+  selected?: boolean; // Make optional for home feed
+  onSelect?: () => void; // Make optional for different handlers
+  onPress?: (rideId: string) => void; // New prop for home feed navigation
+  variant?: 'selection' | 'feed'; // New prop to determine layout
+  showDistance?: boolean; // Control distance display
+  showOrigin?: boolean; // Control origin display
+  showDestination?: boolean; // Control destination display
 }
 
-const RideCard: React.FC<RideCardProps> = ({ 
-  id, 
-  avatar, 
-  origin_address,
-  destination_address,
-  dateTime, 
-  price, 
-  seatsLeft = 0,
-  driverName = 'Unknown Driver',
-  rating = 0,
-  carModel = 'Unknown Model',
-  onPress
-}) => {
-  let router: ReturnType<typeof useRouter> | undefined;
-  try {
-    router = useRouter();
-  } catch (error) {
-    console.warn('Navigation context not available');
-  }
-  
-  const isFull = seatsLeft === 0;
-  
-  const formattedDate = new Date(dateTime).toLocaleString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-  
-  const handlePress = () => {
-    if (onPress) {
-      onPress();
-    } else if (router) {
-      router.push(`/ride/${id}` as any);
+const RideCard = ({ 
+  ride, 
+  selected = false, 
+  onSelect, 
+  onPress,
+  variant = 'selection',
+  showDistance = true,
+  showOrigin = true,
+  showDestination = false
+}: RideCardProps) => {
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (date.toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
     } else {
-      console.warn('No navigation or onPress handler available');
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric' 
+      });
     }
   };
-  
+
+  // Helper function to get driver initials from name
+  const getDriverInitials = (name: string) => {
+    const nameParts = name.trim().split(' ');
+    if (nameParts.length >= 2) {
+      return nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0);
+    }
+    return nameParts[0].charAt(0);
+  };
+
+  const getAvailabilityColor = (available: number, total: number) => {
+    const ratio = available / total;
+    if (ratio > 0.5) return 'text-green-600';
+    if (ratio > 0.2) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const handlePress = () => {
+    if (variant === 'selection' && onSelect) {
+      onSelect();
+    } else if (variant === 'feed' && onPress) {
+      onPress(ride.id);
+    }
+  };
+
+  // Feed variant (for home screen)
+  if (variant === 'feed') {
+    return (
+      <TouchableOpacity
+        onPress={handlePress}
+        className="bg-white rounded-xl p-4 mb-4 mx-4 shadow-sm border border-gray-100"
+      >
+        {/* Header with Time and Distance */}
+        <View className="flex-row justify-between items-start mb-3">
+          <View className="flex-1">
+            <Text className="text-lg font-semibold text-gray-800 mb-1">
+              {formatDate(ride.departure_time)}
+            </Text>
+            <Text className="text-sm text-gray-500">
+              Departs at {formatTime(ride.departure_time)}
+            </Text>
+          </View>
+          
+          {showDistance && ride.distance_from_user && (
+            <View className="bg-blue-50 px-3 py-1 rounded-full">
+              <Text className="text-xs font-medium text-blue-600">
+                {ride.distance_from_user.toFixed(1)} km away
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Route Information */}
+        {(showOrigin || showDestination) && (
+          <View className="mb-4">
+            {showOrigin && (
+              <View className="flex-row items-center mb-2">
+                <View className="w-3 h-3 bg-green-500 rounded-full mr-3" />
+                <Text className="text-sm font-medium text-gray-800 flex-1" numberOfLines={1}>
+                  {ride.origin.label}
+                </Text>
+              </View>
+            )}
+            
+            {showOrigin && showDestination && (
+              <View className="ml-1.5 w-0.5 h-4 bg-gray-300 mb-2" />
+            )}
+            
+            {showDestination && (
+              <View className="flex-row items-center">
+                <View className="w-3 h-3 bg-red-500 rounded-full mr-3" />
+                <Text className="text-sm font-medium text-gray-800 flex-1" numberOfLines={1}>
+                  {ride.destination.label}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Driver Information */}
+        <View className="flex-row items-center mb-4">
+          <View className="w-12 h-12 rounded-full bg-gray-300 justify-center items-center mr-3">
+            {ride.driver.avatar_url ? (
+              <Image
+                source={{ uri: ride.driver.avatar_url }}
+                className="w-12 h-12 rounded-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <Text className="text-gray-600 font-semibold text-sm">
+                {getDriverInitials(ride.driver.name)}
+              </Text>
+            )}
+          </View>
+          <View className="flex-1">
+            <Text className="text-sm font-semibold text-gray-800">
+              {ride.driver.name}
+            </Text>
+            <View className="flex-row items-center mt-1">
+              <Image source={icons.star} className="w-3 h-3 mr-1" tintColor="#FFA500" />
+              <Text className="text-xs text-gray-600 mr-2">
+                {ride.driver.rating.toFixed(1)}
+              </Text>
+              <Text className="text-xs text-gray-500">
+                {ride.driver.vehicle.year} {ride.driver.vehicle.make} {ride.driver.vehicle.model}
+              </Text>
+            </View>
+            <Text className="text-xs text-gray-400 mt-0.5">
+              {ride.driver.vehicle.color}
+            </Text>
+          </View>
+        </View>
+
+        {/* Bottom Row: Price and Availability */}
+        <View className="flex-row justify-between items-center pt-3 border-t border-gray-100">
+          <View className="flex-row items-center">
+            <Image source={icons.point} className="w-4 h-4 mr-2" tintColor="#666" />
+            <Text className={`text-sm font-medium ${getAvailabilityColor(ride.seats_available, ride.seats_total)}`}>
+              {ride.seats_available} of {ride.seats_total} seats
+            </Text>
+          </View>
+          
+          <View className="items-end">
+            <Text className="text-lg font-bold text-green-600">
+              ${ride.price.toFixed(2)}
+            </Text>
+            <Text className="text-xs text-gray-500">per seat</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  // Selection variant (original layout for confirm-ride screen)
   return (
     <TouchableOpacity
-      style={{
-        backgroundColor: '#fff',
-        borderRadius: 24,
-        borderWidth: 1,
-        borderColor: '#E5E5E5',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.08,
-        shadowRadius: 24,
-        elevation: 8,
-        marginHorizontal: 16,
-        marginBottom: 24,
-      }}
       onPress={handlePress}
-      activeOpacity={0.95}
+      className={`flex-row items-center justify-between py-5 px-3 rounded-xl m-2 ${
+        selected ? 'bg-blue-50 border-2 border-blue-500' : 'bg-white border border-gray-200'
+      }`}
     >
-      {/* Header with driver info */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 24, paddingTop: 24, paddingBottom: 16 }}>
-        <Image 
-          source={avatar} 
-          style={{ 
-            width: 64, 
-            height: 64, 
-            borderRadius: 32, 
-            marginRight: 16, 
-            borderWidth: 2, 
-            borderColor: '#E5E5E5' 
-          }} 
-        />
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 20, color: 'black' }}>
-            {driverName || 'Unknown Driver'}
-          </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-            <Text style={{ color: '#FFD700', fontSize: 15, marginRight: 4 }}>★</Text>
-            <Text style={{ color: '#666', fontSize: 15, fontWeight: '500' }}>
-              {rating || 0}
-            </Text>
-            <Text style={{ color: '#999', fontSize: 15, marginHorizontal: 8 }}>•</Text>
-            <Text style={{ color: '#666', fontSize: 15 }}>
-              {carModel || 'Unknown Model'}
-            </Text>
-          </View>
-        </View>
-        <View style={{ 
-          paddingHorizontal: 16, 
-          paddingVertical: 8, 
-          borderRadius: 20, 
-          backgroundColor: isFull ? '#EF4444' : 'black' 
-        }}>
-          <Text style={{ color: 'white', fontSize: 13, fontWeight: 'bold' }}>
-            {isFull ? 'FULL' : `${seatsLeft || 0} LEFT`}
-          </Text>
-        </View>
-      </View>
-
-      {/* Route - Main content */}
-      <View style={{ paddingHorizontal: 24, paddingBottom: 16 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginVertical: 8 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'black' }}>
-            {origin_address || 'Unknown'}
-          </Text>
-          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'black', marginHorizontal: 24 }}>→</Text>
-          <Text style={{ fontWeight: 'bold', fontSize: 16, color: 'black' }}>
-            {destination_address || 'Unknown'}
-          </Text>
-        </View>
-        {/* Time and Price row */}
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ 
-              color: '#999', 
-              fontSize: 13, 
-              fontWeight: '500', 
-              textTransform: 'uppercase', 
-              letterSpacing: 1, 
-              marginBottom: 4 
-            }}>
-              DEPARTURE
-            </Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'black' }}>
-              {formattedDate}
-            </Text>
-          </View>
-          <View style={{ 
-            backgroundColor: 'black', 
-            paddingHorizontal: 20, 
-            paddingVertical: 6, 
-            borderRadius: 20, 
-            borderWidth: 1, 
-            borderColor: 'rgba(0,0,0,0.1)' 
-          }}>
-            <Text style={{ 
-              color: 'white', 
-              fontSize: 11, 
-              fontWeight: '500', 
-              textTransform: 'uppercase', 
-              letterSpacing: 1 
-            }}>
-              PRICE
-            </Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'white', textAlign: 'center' }}>
-              {price || '$0'}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Bottom action area */}
-      <View style={{ 
-        borderTopWidth: 1, 
-        borderTopColor: '#E5E5E5', 
-        paddingHorizontal: 24, 
-        paddingVertical: 16 
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={{ color: '#666', fontSize: 15, fontWeight: '500' }}>
-            Tap to view details & book
-          </Text>
-          <View
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#000',
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.12,
-              shadowRadius: 4,
-              elevation: 6,
-            }}
-          >
+      {/* Driver Info */}
+      <View className="flex-row items-center flex-1">
+        <View className="w-14 h-14 rounded-full bg-gray-300 justify-center items-center mr-4">
+          {ride.driver.avatar_url ? (
             <Image
-              source={caretRight}
-              style={{ width: 22, height: 22, tintColor: '#fff' }}
-              resizeMode="contain"
+              source={{ uri: ride.driver.avatar_url }}
+              className="w-14 h-14 rounded-full"
+              resizeMode="cover"
             />
-          </View>
+          ) : (
+            <Text className="text-gray-600 font-semibold text-lg">
+              {getDriverInitials(ride.driver.name)}
+            </Text>
+          )}
         </View>
+
+        <View className="flex-1">
+          {/* Driver Name */}
+          <Text className="font-semibold text-lg text-gray-900">
+            {ride.driver.name}
+          </Text>
+          
+          {/* Driver Rating */}
+          <View className="flex-row items-center">
+            <Image source={icons.star} className="w-4 h-4 mr-1" tintColor="#FFA500" />
+            <Text className="text-gray-600 text-sm">
+              {ride.driver.rating.toFixed(1)}
+            </Text>
+          </View>
+          
+          {/* Vehicle Info */}
+          <Text className="text-gray-600 text-sm">
+            {ride.driver.vehicle.color} {ride.driver.vehicle.make} {ride.driver.vehicle.model}
+          </Text>
+          
+          {/* Time and Distance */}
+          <View className="flex-row items-center mt-1">
+            <Image source={icons.clock} className="w-4 h-4 mr-1" tintColor="#666" />
+            <Text className="text-gray-600 text-sm mr-3">
+              {formatDate(ride.departure_time)} at {formatTime(ride.departure_time)}
+            </Text>
+            {showDistance && ride.distance_from_user && (
+              <>
+                <Image source={icons.point} className="w-4 h-4 mr-1" tintColor="#666" />
+                <Text className="text-gray-600 text-sm">
+                  {ride.distance_from_user.toFixed(1)}km away
+                </Text>
+              </>
+            )}
+          </View>
+
+          {/* Origin */}
+          {showOrigin && (
+            <Text className="text-gray-500 text-xs mt-1" numberOfLines={1}>
+              From: {ride.origin.label}
+            </Text>
+          )}
+        </View>
+      </View>
+
+      {/* Price and Seats */}
+      <View className="items-end ml-2">
+        <Text className="font-bold text-xl text-green-600">
+          ${ride.price.toFixed(2)}
+        </Text>
+        <Text className="text-gray-600 text-sm">
+          {ride.seats_available} of {ride.seats_total} seats
+        </Text>
+        {selected && (
+          <View className="mt-2">
+            <Image source={icons.check} className="w-5 h-5" tintColor="#3B82F6" />
+          </View>
+        )}
       </View>
     </TouchableOpacity>
   );

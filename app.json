@@ -38,6 +38,12 @@
         }
       ],
       [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to find nearby rides."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#0D0D0D",
